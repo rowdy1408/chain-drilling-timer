@@ -7,6 +7,9 @@ const stopButton = document.getElementById('stopButton');
 const resetButton = document.getElementById('resetButton');
 const countdownInput = document.getElementById('countdownInput');
 
+// Lấy đối tượng âm thanh
+const notificationSound = document.getElementById('notificationSound');
+
 let initialCount = 5;
 let count = initialCount;
 let currentPlayer = 1;
@@ -16,6 +19,8 @@ function updateCountdown() {
     countdownEl.innerText = count;
 
     if (count === 0) {
+        // Phát âm thanh khi hết giờ
+        notificationSound.play();
         count = initialCount;
         switchPlayer();
     } else {
@@ -24,6 +29,9 @@ function updateCountdown() {
 }
 
 function switchPlayer() {
+    count = initialCount;
+    countdownEl.innerText = count;
+
     if (currentPlayer === 1) {
         currentPlayer = 2;
         arrowEl.classList.add('left');
@@ -37,17 +45,33 @@ function switchPlayer() {
     }
 }
 
-// Bấm vào avatar để chọn team đi trước
+// Bấm vào avatar để chọn team đi trước và chuyển lượt chơi
 player1El.addEventListener('click', () => {
-    currentPlayer = 1;
-    player1El.classList.add('selected');
-    player2El.classList.remove('selected');
+    // Nếu có interval đang chạy, chuyển lượt chơi ngay lập tức
+    if (intervalId) {
+        if (currentPlayer !== 1) {
+            switchPlayer();
+        }
+    } else {
+        // Nếu chưa start, chỉ chọn team bắt đầu
+        currentPlayer = 1;
+        player1El.classList.add('selected');
+        player2El.classList.remove('selected');
+    }
 });
 
 player2El.addEventListener('click', () => {
-    currentPlayer = 2;
-    player2El.classList.add('selected');
-    player1El.classList.remove('selected');
+    // Nếu có interval đang chạy, chuyển lượt chơi ngay lập tức
+    if (intervalId) {
+        if (currentPlayer !== 2) {
+            switchPlayer();
+        }
+    } else {
+        // Nếu chưa start, chỉ chọn team bắt đầu
+        currentPlayer = 2;
+        player2El.classList.add('selected');
+        player1El.classList.remove('selected');
+    }
 });
 
 startButton.addEventListener('click', () => {
